@@ -1,0 +1,24 @@
+{
+  "name": "argon2_wasm",
+  "type": "module",
+  "collaborators": [
+    "hazae41 <4405263+hazae41@users.noreply.github.com>"
+  ],
+  "description": "WebAssembly port of Argon2",
+  "version": "1.0.0",
+  "license": "Unlicense",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hazae41/argon2.wasm"
+  },
+  "files": [
+    "argon2_wasm_bg.wasm",
+    "argon2_wasm.js",
+    "argon2_wasm.d.ts"
+  ],
+  "main": "argon2_wasm.js",
+  "types": "argon2_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
