@@ -1,7 +1,7 @@
 use memory_wasm::Memory;
 use wasm_bindgen::prelude::*;
 
-use crate::rjse;
+use crate::libs::jse::rjse;
 
 #[wasm_bindgen]
 pub struct Argon2Deriver {
