@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@hazae41/argon2.wasm",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "WebAssembly port of Argon2",
   "homepage": "https://github.com/hazae41/argon2.wasm",
   "repository": "github:hazae41/argon2.wasm",
