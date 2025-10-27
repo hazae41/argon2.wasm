@@ -1,5 +1,6 @@
 import { test } from "@hazae41/phobos";
-import { Argon2Deriver, initBundled, Memory } from "./index.js";
+import { Buffer } from "node:buffer";
+import { Argon2Deriver, initBundled, Memory } from "./mod.ts";
 
 function equals(a: Uint8Array, b: Uint8Array) {
   return Buffer.from(a).equals(Buffer.from(b))

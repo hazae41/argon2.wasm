@@ -19,4 +19,4 @@ opt-level = 3
 [dependencies]
 wasm-bindgen = { version = "0.2.100", default-features = false }
 argon2 = { version = "0.5.3", default-features = false, features = ["alloc"] }
-memory_wasm = { path = "../../node_modules/@hazae41/memory.wasm/dist/wasm"}
+memory_wasm = { path = "../../node_modules/@hazae41/memory-wasm/out/wasm"}

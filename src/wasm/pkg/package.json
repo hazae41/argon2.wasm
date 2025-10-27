@@ -14,7 +14,8 @@
   "files": [
     "argon2_wasm_bg.wasm",
     "argon2_wasm.js",
-    "argon2_wasm.d.ts"
+    "argon2_wasm.d.ts",
+    "LICENSE.md"
   ],
   "main": "argon2_wasm.js",
   "types": "argon2_wasm.d.ts",
