@@ -1,6 +1,6 @@
 {
   "name": "@hazae41/argon2-wasm",
-  "version": "1.0.8",
+  "version": "2.0.0",
   "imports": {
     "@/": "./src/",
     "@hazae41/memory-wasm": "jsr:@hazae41/memory-wasm@^1.0.46",
