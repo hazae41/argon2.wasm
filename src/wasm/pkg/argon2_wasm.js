@@ -93,7 +93,7 @@ function passArray8ToWasm0(arg, malloc) {
     return ptr;
 }
 
-const Argon2DeriverFinalization = true
+const Argon2DeriverFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_argon2deriver_free(ptr >>> 0, 1));
 
@@ -102,7 +102,7 @@ export class Argon2Deriver {
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-        Argon2DeriverFinalization;
+        Argon2DeriverFinalization.unregister(this);
         return ptr;
     }
 
@@ -125,7 +125,7 @@ export class Argon2Deriver {
             throw takeFromExternrefTable0(ret[1]);
         }
         this.__wbg_ptr = ret[0] >>> 0;
-        Argon2DeriverFinalization;
+        Argon2DeriverFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
     /**
@@ -144,7 +144,7 @@ export class Argon2Deriver {
     }
 }
 
-const MemoryFinalization = true
+const MemoryFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_memory_free(ptr >>> 0, 1));
 
@@ -154,7 +154,7 @@ export class Memory {
         ptr = ptr >>> 0;
         const obj = Object.create(Memory.prototype);
         obj.__wbg_ptr = ptr;
-        MemoryFinalization;
+        MemoryFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
 
@@ -163,7 +163,7 @@ export class Memory {
         this.__wbg_ptr = 0;
         this.__wbg_ptr0 = 0;
         this.__wbg_len0 = 0;
-        MemoryFinalization;
+        MemoryFinalization.unregister(this);
         return ptr;
     }
 
@@ -181,7 +181,7 @@ export class Memory {
         this.__wbg_ptr = ret >>> 0;
         this.__wbg_ptr0 = ptr0 >>> 0;
         this.__wbg_len0 = len0 >>> 0;
-        MemoryFinalization;
+        MemoryFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
     /**
