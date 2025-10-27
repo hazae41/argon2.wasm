@@ -1,8 +1,8 @@
 import { test } from "@hazae41/phobos";
-import { Argon2Deriver, initBundled, Memory } from "./mod.ts";
+import { Argon2Deriver, load, Memory } from "./mod.ts";
 
 test("argon2", async () => {
-  await initBundled()
+  await load()
 
   using pass = new Memory(crypto.getRandomValues(new Uint8Array(256)))
   using salt = new Memory(crypto.getRandomValues(new Uint8Array(32)))
