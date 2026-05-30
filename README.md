@@ -25,7 +25,7 @@ npm install --save-peer @hazae41/argon2-wasm
 import { argon2Wasm } from "@hazae41/argon2-wasm";
 
 // Wait for WASM to load
-await argon2Wasm.initBundled();
+await argon2Wasm.load();
 
 using pass = new argon2Wasm.Memory(crypto.getRandomValues(new Uint8Array(256)))
 using salt = new argon2Wasm.Memory(crypto.getRandomValues(new Uint8Array(32)))
