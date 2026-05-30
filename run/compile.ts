@@ -1,14 +1,22 @@
-import { readFileSync, rmSync, writeFileSync } from "node:fs";
+import { execSync } from "node:child_process";
+import { readFileSync, writeFileSync } from "node:fs";
 
-const cargo = readFileSync(`./src/wasm/Cargo.toml`, "utf8")
-const packp = cargo.split("\n\n").find(p => p.startsWith("[package]"))!
-const namel = packp.split("\n").find(l => l.startsWith("name = "))!
-const name = namel.split(" = ")[1].replaceAll('"', "").trim()
+execSync("rustup target add wasm32-unknown-unknown", { stdio: "inherit" })
 
-const wasm = readFileSync(`./src/wasm/pkg/${name}_bg.wasm`)
+execSync("cargo install wasm-tools --version 1.250.0 --locked", { stdio: "inherit" })
 
-writeFileSync(`./src/wasm/pkg/${name}.wasm.js`, `export const data = "data:application/wasm;base64,${wasm.toString("base64")}";`);
-writeFileSync(`./src/wasm/pkg/${name}.wasm.d.ts`, `export const data: string;`);
+execSync("cargo install wasm-bindgen-cli --version 0.2.100 --locked", { stdio: "inherit" })
+
+execSync("cargo build --target wasm32-unknown-unknown --release --locked", { stdio: "inherit", cwd: "./src/wasm" })
+
+execSync("wasm-bindgen --target web --out-dir ./out ./target/wasm32-unknown-unknown/release/daemon.wasm", { stdio: "inherit", cwd: "./src/wasm" })
+
+execSync("wasm-tools strip --all ./out/daemon_bg.wasm -o ./out/daemon_bg.wasm", { stdio: "inherit", cwd: "./src/wasm" })
+
+const wasm = readFileSync(`./src/wasm/out/daemon_bg.wasm`)
+
+writeFileSync(`./src/wasm/out/daemon.wasm.js`, `export const data = "data:application/wasm;base64,${wasm.toBase64()}";`);
+writeFileSync(`./src/wasm/out/daemon.wasm.d.ts`, `export const data: string;`);
 
 const beforeMemoryJs = `export class Memory {
 
@@ -104,6 +112,8 @@ const afterMemoryJs = `export class Memory {
         ptr = ptr >>> 0;
         const obj = Object.create(Memory.prototype);
         obj.__wbg_ptr = ptr;
+        obj.__wbg_ptr0 = wasm.memory_ptr(ptr) >>> 0;
+        obj.__wbg_len0 = wasm.memory_len(ptr) >>> 0;
         MemoryFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
@@ -138,33 +148,19 @@ const afterMemoryJs = `export class Memory {
     * @returns {number}
     */
     ptr() {
-        const ret = wasm.memory_ptr(this.__wbg_ptr);
-        return ret >>> 0;
+        return this.__wbg_ptr0;
     }
     /**
     * @returns {number}
     */
     len() {
-        const ret = wasm.memory_len(this.__wbg_ptr);
-        return ret >>> 0;
-    }
-    /**
-    * @returns {number}
-    */
-    get ptr0() {
-        return this.__wbg_ptr0 ??= this.ptr();
-    }
-    /**
-    * @returns {number}
-    */
-    get len0() {
-        return this.__wbg_len0 ??= this.len();
+        return this.__wbg_len0;
     }
     /**
     * @returns {Uint8Array}
     */
     get bytes() {
-        return getUint8ArrayMemory0().subarray(this.ptr0, this.ptr0 + this.len0);
+        return getUint8ArrayMemory0().subarray(this.__wbg_ptr0, this.__wbg_ptr0 + this.__wbg_len0);
     }
 }`
 
@@ -200,35 +196,22 @@ const afterMemoryJs2 = `export class Memory {
     * @returns {number}
     */
     ptr() {
-        const ret = wasm.memory_ptr(this.__wbg_ptr);
-        return ret >>> 0;
+        return this.__wbg_ptr0;
     }
     /**
     * @returns {number}
     */
     len() {
-        const ret = wasm.memory_len(this.__wbg_ptr);
-        return ret >>> 0;
-    }
-    /**
-    * @returns {number}
-    */
-    get ptr0() {
-        return this.__wbg_ptr0 ??= this.ptr();
-    }
-    /**
-    * @returns {number}
-    */
-    get len0() {
-        return this.__wbg_len0 ??= this.len();
+        return this.__wbg_len0;
     }
     /**
     * @returns {Uint8Array}
     */
     get bytes() {
-        return getUint8ArrayMemory0().subarray(this.ptr0, this.ptr0 + this.len0);
+        return getUint8ArrayMemory0().subarray(this.__wbg_ptr0, this.__wbg_ptr0 + this.__wbg_len0);
     }
 }`
+
 
 const beforeMemoryTs = `export class Memory {
   free(): void;
@@ -239,35 +222,21 @@ const beforeMemoryTs = `export class Memory {
 
 const afterMemoryTs = `export class Memory {
   free(): void;
-/**
-* @param {Uint8Array} inner
-*/
   constructor(inner: Uint8Array);
-/**
-* @returns {number}
-*/
   ptr(): number;
-/**
-* @returns {number}
-*/
   len(): number;
-/**
-* @returns {Uint8Array}
-*/
   get bytes(): Uint8Array;
 }`
 
-const glueJs = readFileSync(`./src/wasm/pkg/${name}.js`, "utf8")
+const glueJs = readFileSync(`./src/wasm/out/daemon.js`, "utf8")
   .replaceAll(beforeMemoryJs, afterMemoryJs)
   .replaceAll(beforeMemoryJs2, afterMemoryJs2)
   .replaceAll(`free()`, `[Symbol.dispose]()`)
-  .replaceAll(`module_or_path = new URL('${name}_bg.wasm', import.meta.url);`, `throw new Error();`)
+  .replaceAll(`module_or_path = new URL('daemon_bg.wasm', import.meta.url);`, `throw new Error();`)
 
-const glueTs = readFileSync(`./src/wasm/pkg/${name}.d.ts`, "utf8")
+const glueTs = readFileSync(`./src/wasm/out/daemon.d.ts`, "utf8")
   .replaceAll(beforeMemoryTs, afterMemoryTs)
   .replaceAll(`free()`, `[Symbol.dispose]()`)
 
-writeFileSync(`./src/wasm/pkg/${name}.js`, glueJs)
-writeFileSync(`./src/wasm/pkg/${name}.d.ts`, glueTs)
-
-rmSync(`./src/wasm/pkg/.gitignore`, { force: true });
+writeFileSync(`./src/wasm/out/daemon.js`, glueJs)
+writeFileSync(`./src/wasm/out/daemon.d.ts`, glueTs)

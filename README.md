@@ -3,14 +3,10 @@
 WebAssembly port of Argon2
 
 ```bash
-npm i @hazae41/argon2-wasm
+npm install --save-peer @hazae41/argon2-wasm
 ```
 
-```bash
-deno install jsr:@hazae41/argon2-wasm
-```
-
-[**📦 NPM**](https://www.npmjs.com/package/@hazae41/argon2-wasm) • [**📦 JSR**](https://jsr.io/@hazae41/argon2-wasm)
+[**📦 NPM**](https://www.npmjs.com/package/@hazae41/argon2-wasm)
 
 ## Features
 - Reproducible building
@@ -44,10 +40,10 @@ console.log(derived.bytes)
 
 ### Reproducible building
 
-You can build the exact same bytecode using Docker
+You can build the exact same bytecode
 
 ```bash
-npm run compile
+npm run compile && npm run prepack
 ```
 
 Then check that all the files are the same using `npm diff`
