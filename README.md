@@ -3,7 +3,7 @@
 WebAssembly port of Argon2
 
 ```bash
-npm install --save-peer @hazae41/argon2-wasm
+npm install @hazae41/argon2-wasm
 ```
 
 [**📦 NPM**](https://www.npmjs.com/package/@hazae41/argon2-wasm)
