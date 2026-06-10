@@ -1,2 +1,2 @@
-export * as argon2Wasm from "./mods/mod.ts";
+export * from "./mods/mod.ts";
 
