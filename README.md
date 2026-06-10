@@ -22,15 +22,14 @@ npm install @hazae41/argon2-wasm
 ## Usage
 
 ```typescript
-import { argon2Wasm } from "@hazae41/argon2-wasm";
+import { load, Memory, Argon2Deriver } from "@hazae41/argon2-wasm";
 
-// Wait for WASM to load
-await argon2Wasm.load();
+await load();
 
-using pass = new argon2Wasm.Memory(crypto.getRandomValues(new Uint8Array(256)))
-using salt = new argon2Wasm.Memory(crypto.getRandomValues(new Uint8Array(32)))
+using pass = new Memory(crypto.getRandomValues(new Uint8Array(256)))
+using salt = new Memory(crypto.getRandomValues(new Uint8Array(32)))
 
-using deriver = new argon2Wasm.Argon2Deriver("argon2d", 19, 16384, 12, 2)
+using deriver = new Argon2Deriver("argon2d", 19, 16384, 12, 2)
 using derived = deriver.derive(pass, salt)
 
 console.log(derived.bytes)
